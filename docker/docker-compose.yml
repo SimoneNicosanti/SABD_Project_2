@@ -1,0 +1,79 @@
+networks:
+  flink_network:
+    driver: bridge
+    name: my_network
+
+
+services:
+
+  producer:
+    build: 
+      dockerfile: producer_file.dockerfile
+    tty : true
+    depends_on:
+      - kafka
+    networks:
+      - flink_network
+    volumes:
+      - ../producer/src:/src
+
+
+  jobmanager:
+    #image: flink:latest
+    build:
+      dockerfile: flink_file.dockerfile
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager 
+    tty: true
+
+
+  taskmanager:
+    image: flink:latest
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2      
+    tty: true 
+
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    networks:
+      - flink_network
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true ## To automatically create topic when added events
+    tty : true
+
+  
+  # spark-master:
+
+  # spark-worker:
+  
+
+  # ## Redis
+  # redis :
+  #   image: redis
+  #   networks:
+  #     - my_network
+  #   ports:
+  #     - "6379:6379"
+  #   tty : true
+
+  # ## Grafana
+  # grafana :
+  #   image: grafana/grafana
+  #   networks:
+  #     - my_network
+  #   ports:
+  #     - "3000:3000"
+  #   tty : true
+
+
