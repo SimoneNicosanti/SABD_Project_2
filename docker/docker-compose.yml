@@ -1,7 +1,7 @@
 networks:
   flink_network:
     driver: bridge
-    name: my_network
+    name: flink_network
 
 
 services:
@@ -16,6 +16,9 @@ services:
       - flink_network
     volumes:
       - ../producer/src:/src
+      - ../dataset:/dataset
+    # command: |
+    #         curl -o /Dataset.csv www.ce.uniroma2.it/courses/sabd2223/project/out600_combined+header.csv 
 
 
   jobmanager:
@@ -58,14 +61,14 @@ services:
   # spark-worker:
   
 
-  # ## Redis
-  # redis :
-  #   image: redis
-  #   networks:
-  #     - my_network
-  #   ports:
-  #     - "6379:6379"
-  #   tty : true
+  ## Redis
+  redis :
+    image: redis
+    networks:
+      - flink_network
+    ports:
+      - "6379:6379"
+    tty : true
 
   # ## Grafana
   # grafana :
