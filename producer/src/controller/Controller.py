@@ -17,12 +17,12 @@ def controller() :
 
     prevTime : datetime.datetime = None
     print("Sending Data")
+    i = 0
     for event in eventList :
 
         eventInfo = [event[2], event[3], event[0], event[1], event[21], event[23], event[26]]
         
         dictData = {header[i] : eventInfo[i] for i in range(0, len(header))}
-        print(dictData)
 
         rowTimeString = str(eventInfo[0]) + " " + eventInfo[1]
         rowTime = datetime.datetime.strptime(rowTimeString, '%d-%m-%Y %H:%M:%S.%f')
@@ -41,6 +41,13 @@ def controller() :
             topic = kafkaTopic,
             value = json.dumps(dictData).encode()
         )
+
+        i += 1
+        # if (i == 100) :
+        #     break
+
+        print(json.dumps(dictData).encode())
+
 
     kafkaProducer.close()
     

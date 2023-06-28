@@ -17,6 +17,7 @@ services:
     volumes:
       - ../producer/src:/src
       - ../dataset:/dataset
+    working_dir : /src
     # command: |
     #         curl -o /Dataset.csv www.ce.uniroma2.it/courses/sabd2223/project/out600_combined+header.csv 
 
@@ -24,25 +25,39 @@ services:
   jobmanager:
     #image: flink:latest
     build:
-      dockerfile: flink_file.dockerfile
+      dockerfile: ./flink_file.dockerfile
+      context: .
+    networks:
+      - flink_network
     ports:
       - "8081:8081"
-    command: jobmanager
+    working_dir : /src
+    command: | 
+            jobmanager
+    volumes:
+      - ../flink_processor/src:/src
+      - ../Results:/Results
     environment:
       - |
-        FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager 
+        FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager
     tty: true
 
 
   taskmanager:
-    image: flink:latest
+    build:
+      dockerfile: flink_file.dockerfile
+      context: .
     depends_on:
       - jobmanager
     command: taskmanager
+    volumes:
+      - ../Results:/Results
     environment:
       - |
         FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 2      
+        taskmanager.numberOfTaskSlots: 20
+    networks:
+      - flink_network  
     tty: true 
 
 
