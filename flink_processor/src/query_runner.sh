@@ -1,3 +1,5 @@
+
+
 if [ "$#" -eq 1 ] 
 then
     echo "Run query $1"

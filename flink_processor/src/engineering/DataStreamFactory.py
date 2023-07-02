@@ -4,44 +4,54 @@ from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitial
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.common.serialization import SimpleStringSchema
 from pyflink.datastream import StreamExecutionEnvironment
+
 from engineering import FlinkEnvFactory
 import jproperties
+import datetime
+import json
+from dao import KafkaPropertiesReader
 
 
 def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
+
+    def jsonToTuple(mess : str) :
+        jsonObject = json.loads(mess)
+
+        tupleDateTime = datetime.datetime.strptime(jsonObject["TradingDate"] + " " + jsonObject["TradingTime"], "%d-%m-%Y %H:%M:%S.%f")
+
+        return (
+                jsonObject["ID"] , 
+                jsonObject["SecType"] , 
+                float(jsonObject["Last"]) ,
+                datetime.datetime.timestamp(tupleDateTime) * 1000
+                )
+    
     env = FlinkEnvFactory.getEnv()
     kafkaSource = __getKafkaSource()
 
     dataStream = env.from_source(kafkaSource, WatermarkStrategy.no_watermarks(), "Kafka Source")
 
-    return (dataStream, env)
+    convertedDataStream = dataStream.map( ## (ID, SecType, Last, Timestamp)
+            jsonToTuple,
+            output_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.FLOAT(), Types.FLOAT()])
+        ) 
+
+    return (convertedDataStream, env)
+
 
 
 def __getKafkaSource() -> KafkaSource :
-    
-    configs = jproperties.Properties()
 
-    with (open("./properties/kafka.properties", "rb")) as kafka_conf :
+    kafkaServer = KafkaPropertiesReader.getKafkaUrl()
+    kafkaTopic = KafkaPropertiesReader.getKafkaInputTopic()
 
-        configs.load(kafka_conf)
-
-        kafkaHost = str(configs.get("kafka.host").data)
-        kafkaPort = str(configs.get("kafka.port").data)
-        kafkaTopic = str(configs.get("kafka.topic").data)
-
-        bootstrapServer = kafkaHost + ":" + kafkaPort
-
-        kafkaSource = KafkaSource.builder(
-            ).set_bootstrap_servers(
-                bootstrapServer
-            ).set_topics(
-                kafkaTopic
-            ).set_group_id(
-                "flink_group"
-            ).set_starting_offsets(
-                KafkaOffsetsInitializer.earliest()
-            ).set_value_only_deserializer(
-                SimpleStringSchema()
-            ).build()
+    kafkaSource = KafkaSource \
+        .builder() \
+        .set_bootstrap_servers(kafkaServer) \
+        .set_topics(kafkaTopic) \
+        .set_group_id("flink_group") \
+        .set_starting_offsets(KafkaOffsetsInitializer.earliest()) \
+        .set_value_only_deserializer(SimpleStringSchema()) \
+        .build()
         
-        return kafkaSource
+    return kafkaSource

@@ -52,10 +52,12 @@ services:
     command: taskmanager
     volumes:
       - ../Results:/Results
+      - ../flink_processor/src:/src
     environment:
       - |
         FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 20
+    working_dir : /src
     networks:
       - flink_network  
     tty: true 
