@@ -1,15 +1,16 @@
 
 from pyflink.common.typeinfo import Types
 from pyflink.datastream.connectors.kafka import KafkaSink, KafkaRecordSerializationSchema, DeliveryGuarantee 
+from pyflink.datastream.connectors.file_system import FileSink
 from pyflink.datastream.formats.json import JsonRowSerializationSchema
-from pyflink.datastream.formats.csv import CsvRowSerializationSchema
+from pyflink.datastream.formats.csv import CsvRowSerializationSchema, CsvBulkWriters
 from pyflink.common import SerializationSchema
 
 from dao import KafkaPropertiesReader
 
 
 
-def getKafkaSink(topicName : str, serializationSchema : SerializationSchema) :
+def getKafkaSink(topicName : str, serializationSchema : SerializationSchema) -> KafkaSink :
     
     
     kafkaServer = KafkaPropertiesReader.getKafkaUrl()
@@ -29,5 +30,12 @@ def getKafkaSink(topicName : str, serializationSchema : SerializationSchema) :
     return kafkaSink
 
 
-def getFileSinkFactory() :
-    return
+def getFileSinkFactory(outputDir : str) -> FileSink :
+    schema = CsvRowSerializationSchema.Builder()
+
+    fileSink = FileSink.for_bulk_format(
+        outputDir, 
+        CsvBulkWriters.for_schema(schema)
+    ).build()
+
+    return fileSink

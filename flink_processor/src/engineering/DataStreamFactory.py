@@ -26,6 +26,7 @@ def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
                 datetime.datetime.timestamp(tupleDateTime) * 1000
                 )
     
+
     env = FlinkEnvFactory.getEnv()
     kafkaSource = __getKafkaSource()
 
@@ -34,7 +35,9 @@ def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
     convertedDataStream = dataStream.map( ## (ID, SecType, Last, Timestamp)
             jsonToTuple,
             output_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.FLOAT(), Types.FLOAT()])
-        ) 
+        )
+    
+    #convertedDataStream.print()
 
     return (convertedDataStream, env)
 
