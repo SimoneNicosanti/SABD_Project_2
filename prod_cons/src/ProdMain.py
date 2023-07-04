@@ -1,7 +1,7 @@
-from controller import Controller
+from controller import Producer
 
 def main() :
-    Controller.controller()
+    Producer.produce()
     return
 
 

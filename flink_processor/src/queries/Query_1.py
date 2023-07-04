@@ -18,9 +18,7 @@ from engineering import SerializationSchemaFactory
 
 def query() :
 
-    (dataStream, env) = DataStreamFactory.getDataStream()
-
-    globalWindow = GlobalWindows.create()
+    (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
     
     partialStream = dataStream.filter(
             lambda x : str(x[0]).startswith("G") and str(x[0]).endswith(".FR") and str(x[1]) == "E"
@@ -40,8 +38,18 @@ def query() :
             key_type = Types.STRING()
         )
 
-    serializationSchema = SerializationSchemaFactory.getQueryOneSchema()
+    kafkaSchema = SerializationSchemaFactory.getQueryOneSchema_JSON()
 
+    # firstResultStream = partialStream.window(
+    #         TumblingEventTimeWindows.of(Time.hours(1))
+    #     ).reduce( ## (ID, (sumLast, count, minTimestamp))
+    #         lambda x, y : (x[0], (x[1][0] + y[1][0], x[1][1] + y[1][1], min(x[1][2], y[1][2])))
+    #     ).map( ## (timestamp, ID, avgLast, count)
+    #         lambda x : (x[1][2], x[0], x[1][0] / x[1][1], x[1][1])
+    #     ).map(
+    #         lambda x : Row(x[0], x[1], x[2], x[3]) ,
+    #         output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
+    #     )
     firstResultStream = partialStream.window(
             TumblingEventTimeWindows.of(Time.hours(1))
         ).reduce( ## (ID, (sumLast, count, minTimestamp))
@@ -53,7 +61,7 @@ def query() :
             output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
         )
     
-    firstResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Hour", serializationSchema))
+    firstResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Hour", kafkaSchema))
     #firstResultStream.print()
     
 
@@ -68,22 +76,9 @@ def query() :
             output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
         )
     
-    secondResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Day", serializationSchema))
+    secondResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Day", kafkaSchema))
     #secondResultStream.print()
     
-    
-    # thirdResultStream = partialStream.window(
-    #         GlobalWindows.create()
-    #     ).trigger(
-    #         GlobalTrigger()
-    #     ).reduce(
-    #         lambda x, y : (x[0], (x[1][0] + y[1][0], x[1][1] + y[1][1], min(x[1][2], y[1][2])))
-    #     ).map( ## -1 is to remove the end of stream tuple
-    #         lambda x : (x[1][2], x[0], x[1][0] / (x[1][1] - 1), x[1][1] - 1)
-    #     ).map( ## Prapared for save
-    #         lambda x : Row(x[0], x[1], x[2], x[3]) ,
-    #         output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
-    #     )
 
     thirdResultStream = partialStream.window(
         TumblingEventTimeWindows.of(Time.days(7)) ## Max date for the dataset is November 12th 2021
@@ -96,8 +91,8 @@ def query() :
         output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
     )
     
-    #thirdResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Glb", serializationSchema))
-    thirdResultStream.print()
+    thirdResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Glb", kafkaSchema))
+    #thirdResultStream.print()
 
     env.execute("Query_1")
     env.close()

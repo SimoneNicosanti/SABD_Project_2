@@ -6,7 +6,7 @@ networks:
 
 services:
 
-  producer:
+  kafka-client:
     build: 
       dockerfile: producer_file.dockerfile
     tty : true
@@ -15,8 +15,9 @@ services:
     networks:
       - flink_network
     volumes:
-      - ../producer/src:/src
+      - ../prod_cons/src:/src
       - ../dataset:/dataset
+      - ../Results:/Results
     working_dir : /src
     # command: |
     #         curl -o /Dataset.csv www.ce.uniroma2.it/courses/sabd2223/project/out600_combined+header.csv 

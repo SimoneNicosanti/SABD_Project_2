@@ -6,7 +6,7 @@ from dao import CsvReader
 
 SCALE_FACTOR = 3600
 
-def controller() :
+def produce() :
 
     kafkaProducer = KafkaSingleton.getKafkaProducer()
     kafkaTopic = KafkaSingleton.getKafkaTopic()
