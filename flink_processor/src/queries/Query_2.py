@@ -11,7 +11,7 @@ from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 
 from pyflink.common.typeinfo import Types
 
-from queries.utils.Query_2_Utils import MyProcessWindowFunction, SecondTimestampAssigner, FinalMapFunction, getQuerySchema_JSON, RankingFunction
+from queries.utils.Query_2_Utils import MyProcessWindowFunction, SecondTimestampAssigner, FinalMapFunction, getQuerySchema_JSON, RankingFunction, VariationReduceFunction
 
 def query() :
     
@@ -42,16 +42,10 @@ def query() :
         partialStream.window(
                 tumblingWindow
         ).reduce( 
-            lambda x, y : ( ## (ID, minTime, minLast, maxTime, maxLast)
-                    x[0], 
-                    min(x[1], y[1]),
-                    x[2] if x[1] < y[1] else y[2],
-                    max(x[3], y[3]),
-                    x[4] if x[3] > y[3] else y[4]
-                    ),
-                MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
+            VariationReduceFunction(), ## (ID, minTime, minLast, maxTime, maxLast)
+            MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
         ).filter(
-            lambda x : x[1] != x[3]
+            lambda x : (x[2] != x[4]) or (x[2] == x[4] and x[3] != x[5])
         ).map( ## (windowStart, ID, variation)
             lambda x : (x[0], x[1], x[5] - x[3])
         ).assign_timestamps_and_watermarks(
@@ -73,9 +67,7 @@ def query() :
                             x[11], x[12], x[13], x[14], x[15], x[16], x[17], x[18], x[19], x[20]
                             ),
             output_type = Types.ROW([Types.FLOAT()] + [Types.STRING(), Types.FLOAT()] * 10)
-        ).sink_to(
-            SinkFactory.getKafkaSink(key, getQuerySchema_JSON())
-        )
+        ).print()
     
     env.execute("Query_2")
 

@@ -2,10 +2,29 @@ from pyflink.common.typeinfo import Types
 from collections.abc import Iterable
 from pyflink.datastream.formats.json import JsonRowSerializationSchema
 from pyflink.datastream.window import TimeWindow
-from pyflink.datastream.functions import ProcessWindowFunction, MapFunction
+from pyflink.datastream.functions import ProcessWindowFunction, MapFunction, ReduceFunction
 from pyflink.common.watermark_strategy import TimestampAssigner
 from pyflink.datastream.functions import AggregateFunction
 
+
+class VariationReduceFunction(ReduceFunction) :
+
+    def reduce(self, x, y):
+        timestamp = x[0]
+        minTime = min(x[1], y[1])
+        maxTime = max(x[3], y[3])
+
+        if x[1] == y[1] :
+            minLast = min(x[2], y[2])
+        else :
+            minLast = x[2] if x[1] < y[1] else y[2]
+        
+        if (x[3] == y[3]) :
+            maxLast = max(x[4], y[4])
+        else :
+            maxLast = x[4] if x[3] > y[3] else y[4]
+
+        return (timestamp, minTime, minLast, maxTime, maxLast)
 
 
 class MyProcessWindowFunction(ProcessWindowFunction) :

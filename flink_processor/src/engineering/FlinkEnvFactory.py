@@ -14,7 +14,6 @@ def getEnv() :
 
     env.add_jars("file:///KafkaConnectorDependencies.jar")
     
-    env.add_python_file("file:///src/queries/utils/GlobalTrigger.py")
     env.add_python_file("file:///src/queries/utils/MyTimestampAssigner.py")
     env.add_python_file("file:///src/queries/utils/Query_1_Utils.py")
     env.add_python_file("file:///src/queries/utils/Query_2_Utils.py")
