@@ -12,7 +12,7 @@ class GlobalTrigger(Trigger) :
             limitTime = datetime.datetime(2021, 11, 19, 12, 0, 0, 0)
             limitTimeTimestamp = datetime.datetime.timestamp(limitTime) * 1000
             #print(element[0], element[1][2], timestamp)
-
+        
             trigger = EventTimeTrigger.create()
             window
 
@@ -21,7 +21,7 @@ class GlobalTrigger(Trigger) :
             else :
                 return TriggerResult.CONTINUE
             
-            
+        
             
         def on_processing_time(self, time: int, window, ctx: 'Trigger.TriggerContext') -> TriggerResult:
             return TriggerResult.CONTINUE

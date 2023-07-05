@@ -46,7 +46,7 @@ def produce() :
         )
 
         i += 1
-        if (i == 10000) :
+        if (i == 100000) :
             break
 
         print(json.dumps(dictData).encode())

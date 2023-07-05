@@ -6,7 +6,7 @@ from pyflink.datastream.formats.json import JsonRowDeserializationSchema
 
 
 def getEnv() :
-    ## TODO Trovare un modo per chiudere lo stream quando serve con un messaggio di end sullo stream su kafka
+    
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_runtime_mode(RuntimeExecutionMode.STREAMING)
     env.set_parallelism(1)
@@ -16,5 +16,7 @@ def getEnv() :
     
     env.add_python_file("file:///src/queries/utils/GlobalTrigger.py")
     env.add_python_file("file:///src/queries/utils/MyTimestampAssigner.py")
+    env.add_python_file("file:///src/queries/utils/Query_1_Utils.py")
+    env.add_python_file("file:///src/queries/utils/Query_2_Utils.py")
 
     return env

@@ -8,9 +8,11 @@ def writeCsv(topic : str, value : str) :
 
     if (topic.startswith("Query_1")) :
         header = ["Timestamp", "ID", "Avg", "Count"]
-
-    elif topic.startswith("Query_2") :
-        pass
+    elif (topic.startswith("Query_2")) :
+        header = ["Timestamp"]
+        for i in range(1, 11) :
+            header.append("ID_" + str(i))
+            header.append("Var_" + str(i))
     else :
         pass
 

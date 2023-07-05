@@ -29,13 +29,3 @@ def getKafkaSink(topicName : str, serializationSchema : SerializationSchema) -> 
         .build()
     
     return kafkaSink
-
-
-def getFileSink(outputDir : str, schema : CsvSchema) -> FileSink :
-    ## TODO Solve error
-    fileSink = FileSink.for_bulk_format(
-        outputDir, 
-        CsvBulkWriters.for_schema(schema)
-    ).build()
-
-    return fileSink

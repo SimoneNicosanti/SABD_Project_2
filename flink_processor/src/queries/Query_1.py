@@ -1,23 +1,21 @@
 from engineering import DataStreamFactory
 from pyflink.common.typeinfo import Types
-from pyflink.common import Time, WatermarkStrategy, Duration
+from pyflink.common import Time, WatermarkStrategy
 
 from pyflink.common import Row
 from pyflink.datastream.window import TumblingEventTimeWindows
 
 from engineering import SinkFactory
 
-from queries.utils.GlobalTrigger import GlobalTrigger
 from queries.utils.MyTimestampAssigner import MyTimestampAssigner
-from pyflink.datastream.window import GlobalWindows
 
 from pyflink.common.typeinfo import Types
 
-from engineering import SerializationSchemaFactory
+from queries.utils.Query_1_Utils import MyProcessWindowFunction, getQuerySchema_JSON
 
 
 def query() :
-
+    
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
     
     partialStream = dataStream.filter(
@@ -27,76 +25,37 @@ def query() :
             ).with_timestamp_assigner(
                 MyTimestampAssigner()
             )
-        ).map( ## (ID, (Last, 1, Timestamp))
-            func = lambda x : (x[0] , (x[2], 1, x[3])),
-            output_type = Types.TUPLE([
-                Types.STRING() , 
-                Types.TUPLE([Types.FLOAT(), Types.INT(), Types.FLOAT()])
-                ])
-        ).key_by( ## (ID, (Last, 1, Timestamp))
-            key_selector = lambda x : x[0],
-            key_type = Types.STRING()
+        ).map( ## (ID, Last, 1)
+            lambda x : (x[0], x[2], 1),
+            output_type = Types.TUPLE([Types.STRING(), Types.FLOAT(), Types.INT()])
+        ).key_by( ## (ID, Last, 1) keyd by ID
+            key_selector = lambda x : x[0]
         )
+    
 
-    kafkaSchema = SerializationSchemaFactory.getQueryOneSchema_JSON()
+    windowedStreams = {
+        "Query_1_Hour" : TumblingEventTimeWindows.of(Time.hours(1)), 
+        "Query_1_Day" : TumblingEventTimeWindows.of(Time.days(1)), 
+        "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7))
+        }
+    
 
-    # firstResultStream = partialStream.window(
-    #         TumblingEventTimeWindows.of(Time.hours(1))
-    #     ).reduce( ## (ID, (sumLast, count, minTimestamp))
-    #         lambda x, y : (x[0], (x[1][0] + y[1][0], x[1][1] + y[1][1], min(x[1][2], y[1][2])))
-    #     ).map( ## (timestamp, ID, avgLast, count)
-    #         lambda x : (x[1][2], x[0], x[1][0] / x[1][1], x[1][1])
-    #     ).map(
-    #         lambda x : Row(x[0], x[1], x[2], x[3]) ,
-    #         output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
-    #     )
-    firstResultStream = partialStream.window(
-            TumblingEventTimeWindows.of(Time.hours(1))
-        ).reduce( ## (ID, (sumLast, count, minTimestamp))
-            lambda x, y : (x[0], (x[1][0] + y[1][0], x[1][1] + y[1][1], min(x[1][2], y[1][2])))
-        ).map( ## (timestamp, ID, avgLast, count)
-            lambda x : (x[1][2], x[0], x[1][0] / x[1][1], x[1][1])
-        ).map(
+    for key, tumblingWindow in windowedStreams.items() :
+        partialStream.window(
+            tumblingWindow
+        ).reduce( 
+            lambda x, y : (x[0], x[1] + y[1], x[2] + y[2]), ## (ID, total, count)
+            MyProcessWindowFunction() ## (windowStart, ID, total, count)
+        ).map( ## (windowStart, ID, avgLast, count)
+            lambda x : (x[0], x[1], x[2] / x[3], x[3])
+        ).map( ## Convertion for kafka save
             lambda x : Row(x[0], x[1], x[2], x[3]) ,
             output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
+        ).sink_to(
+            SinkFactory.getKafkaSink(key, getQuerySchema_JSON())
         )
     
-    firstResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Hour", kafkaSchema))
-    #firstResultStream.print()
-    
-
-    secondResultStream = partialStream.window(
-            TumblingEventTimeWindows.of(Time.days(1))
-        ).reduce(
-            lambda x, y : (x[0], (x[1][0] + y[1][0], x[1][1] + y[1][1], min(x[1][2], y[1][2])))
-        ).map( ## (timestamp, ID, avgLast, count)
-            lambda x : (x[1][2], x[0], x[1][0] / x[1][1], x[1][1])
-        ).map( ## Prapared for save
-            lambda x : Row(x[0], x[1], x[2], x[3]) ,
-            output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
-        )
-    
-    secondResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Day", kafkaSchema))
-    #secondResultStream.print()
-    
-
-    thirdResultStream = partialStream.window(
-        TumblingEventTimeWindows.of(Time.days(7)) ## Max date for the dataset is November 12th 2021
-    ).reduce(
-        lambda x, y : (x[0], (x[1][0] + y[1][0], x[1][1] + y[1][1], min(x[1][2], y[1][2])))
-    ).map( ## -1 is to remove the end of stream tuple
-        lambda x : (x[1][2], x[0], x[1][0] / x[1][1], x[1][1])
-    ).map( ## Prapared for save
-        lambda x : Row(x[0], x[1], x[2], x[3]) ,
-        output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
-    )
-    
-    thirdResultStream.sink_to(SinkFactory.getKafkaSink("Query_1_Glb", kafkaSchema))
-    #thirdResultStream.print()
 
     env.execute("Query_1")
-    env.close()
 
     return
-
-
