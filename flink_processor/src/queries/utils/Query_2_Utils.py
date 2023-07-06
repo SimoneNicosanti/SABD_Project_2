@@ -67,7 +67,7 @@ class FinalMapFunction(MapFunction) :
 class RankingFunction(AggregateFunction):
 
     def create_accumulator(self):
-        return (0, []) ## (Timestamp, maxList, minList)
+        return (0, []) ## (Timestamp, rankList)
     
 
     def add(self, value, accumulator):

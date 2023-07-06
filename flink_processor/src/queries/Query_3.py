@@ -12,7 +12,7 @@ from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 from pyflink.common.typeinfo import Types
 
 from queries.utils.Query_2_Utils import VariationReduceFunction, MyProcessWindowFunction, SecondTimestampAssigner
-
+from queries.utils.Query_3_Utils import KeyedPercentileComputation
 
 def query() :
 
@@ -28,8 +28,6 @@ def query() :
     ).key_by(
         lambda x : x[0]
     )
-
-
 
     windowList = {
         "Query_2_Min" : Time.minutes(30),
@@ -57,10 +55,12 @@ def query() :
                 SecondTimestampAssigner()
             )
         ).key_by(
-            lambda x : x[0]
-        ).process()
+            lambda x : (x[0], x[1])
+        ).process(
+            KeyedPercentileComputation()
+        ).print()
 
-
+    
     env.execute("Query_3")
 
     return 

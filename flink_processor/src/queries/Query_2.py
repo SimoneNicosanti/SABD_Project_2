@@ -32,8 +32,8 @@ def query() :
 
     windowList = {
         "Query_2_Min" : Time.minutes(30),
-        "Query_2_Hour" : Time.hours(1),
-        "Query_2_Day" : Time.days(1)
+        # "Query_2_Hour" : Time.hours(1),
+        # "Query_2_Day" : Time.days(1)
     }
     
     for key, timeDuration in windowList.items() :
@@ -91,23 +91,18 @@ def query_variant() :
 
     windowList = {
         "Query_2_Min" : TumblingEventTimeWindows.of(Time.minutes(30)),
-        "Query_2_Hour" : TumblingEventTimeWindows.of(Time.hours(1)),
-        "Query_2_Day" : TumblingEventTimeWindows.of(Time.days(1))}
+        # "Query_2_Hour" : TumblingEventTimeWindows.of(Time.hours(1)),
+        # "Query_2_Day" : TumblingEventTimeWindows.of(Time.days(1))
+        }
     
     for key, tumblingWindow in windowList.items() :
         partialStream.window(
                 tumblingWindow
         ).reduce( 
-            lambda x, y : ( ## (ID, minTime, minLast, maxTime, maxLast)
-                    x[0], 
-                    min(x[1], y[1]),
-                    x[2] if x[1] < y[1] else y[2],
-                    max(x[3], y[3]),
-                    x[4] if x[3] > y[3] else y[4]
-                    ),
-                MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
+            VariationReduceFunction(), ## (ID, minTime, minLast, maxTime, maxLast)
+            MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
         ).filter(
-            lambda x : x[1] != x[3]
+            lambda x : (x[2] != x[4]) or (x[2] == x[4] and x[3] != x[5])
         ).map( ## (windowStart, ID, variation)
             lambda x : (x[0], x[1], x[5] - x[3])
         ).map( ## (windowStart, [variation, ID])
@@ -117,8 +112,8 @@ def query_variant() :
             ).with_timestamp_assigner(
                 SecondTimestampAssigner()
             )
-        ).window_all( ## Rewindow using startWindowTimestamp as timestamp
-            tumblingWindow
+        ).key_by( ## Rewindow using startWindowTimestamp as timestamp
+            lambda x : x[0]
         ).reduce( ## (startWindowTimestamp, listOf(variation, ID))
             lambda x, y : (x[0], x[1] + y[1])
         ).map( ## (startWindowTimestamp, sortedListOf(variation, ID))
@@ -130,12 +125,6 @@ def query_variant() :
                 )
         ).map( ## (startWindowTimestamp, ID_i, Variation_i)
             FinalMapFunction()
-        ).map( ## Row(startWindowTimestamp, ID_i, Variation_i)
-            lambda x : Row(x[0], 
-                            x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10],
-                            x[11], x[12], x[13], x[14], x[15], x[16], x[17], x[18], x[19], x[20]
-                            ),
-            output_type = Types.ROW([Types.FLOAT()] + [Types.STRING(), Types.FLOAT()] * 10)
-        ).sink_to(
-            SinkFactory.getKafkaSink(key, getQuerySchema_JSON())
-        )
+        ).print()
+
+    env.execute("Query_2_Var")

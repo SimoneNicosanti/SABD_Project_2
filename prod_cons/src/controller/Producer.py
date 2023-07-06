@@ -46,7 +46,7 @@ def produce() :
         )
 
         i += 1
-        if (i == 100000) :
+        if (i == 1000000) :
             break
 
         print(json.dumps(dictData).encode())
@@ -59,7 +59,17 @@ def produce() :
             value = json.dumps(endTuple).encode()
         )
 
-        print(json.dumps(endTuple).encode())
+        # print(json.dumps(endTuple).encode())
+
+    ## To trigger last part for queries based on variation
+    for couple in idsSet :
+        endTuple = {"Date" : "", "Time" : "", "ID" : couple[0] , "SecType" : couple[1], "Last" : 0, "TradingTime" : "12:31:00.000", "TradingDate" : "20-11-2021"}
+        kafkaProducer.send(
+            topic = kafkaTopic,
+            value = json.dumps(endTuple).encode()
+        )
+
+        # print(json.dumps(endTuple).encode())
 
     kafkaProducer.close()
     

@@ -7,8 +7,8 @@ def readDatasetFromCSV(fileName : str) -> list :
 
         filteredList = filter(lambda row : not row[0].startswith("#"), reader) ## Header Removal
         filteredList = filter(lambda row : row[1] != "SecType", filteredList) ## Header Removal
-        filteredList = filter(lambda row : row[26] != "", filteredList)
-        filteredList = filter(lambda row : row[23] != "00:00:00.000", filteredList)
+        # filteredList = filter(lambda row : row[26] != "", filteredList)
+        # filteredList = filter(lambda row : row[23] != "00:00:00.000", filteredList)
 
         sortedList = sorted(
             filteredList,
