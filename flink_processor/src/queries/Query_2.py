@@ -11,7 +11,10 @@ from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 
 from pyflink.common.typeinfo import Types
 
-from queries.utils.Query_2_Utils import MyProcessWindowFunction, SecondTimestampAssigner, FinalMapFunction, getQuerySchema_JSON, RankingFunction, VariationReduceFunction
+from queries.utils.Query_2_Utils import MyProcessWindowFunction, SecondTimestampAssigner, FinalMapFunction, RankingFunction, VariationReduceFunction
+
+import json
+
 
 def query() :
     
@@ -32,9 +35,11 @@ def query() :
 
     windowList = {
         "Query_2_Min" : Time.minutes(30),
-        # "Query_2_Hour" : Time.hours(1),
-        # "Query_2_Day" : Time.days(1)
+        "Query_2_Hour" : Time.hours(1),
+        "Query_2_Day" : Time.days(1)
     }
+    
+    # TODO: Vedere se si può fare senza altra finestra
     
     for key, timeDuration in windowList.items() :
         tumblingWindow = TumblingEventTimeWindows.of(timeDuration)
@@ -61,13 +66,12 @@ def query() :
             RankingFunction()
         ).map( ## (startWindowTimestamp, ID_i, Variation_i)
             FinalMapFunction()
-        ).map( ## Row(startWindowTimestamp, ID_i, Variation_i)
-            lambda x : Row(x[0], 
-                            x[1], x[2], x[3], x[4], x[5], x[6], x[7], x[8], x[9], x[10],
-                            x[11], x[12], x[13], x[14], x[15], x[16], x[17], x[18], x[19], x[20]
-                            ),
-            output_type = Types.ROW([Types.FLOAT()] + [Types.STRING(), Types.FLOAT()] * 10)
-        ).print()
+        ).map( ## Convertion for kafka save
+            lambda x : json.dumps(x) ,
+            output_type = Types.STRING()
+        ).sink_to(
+            SinkFactory.getKafkaSink(key)
+        )
     
     env.execute("Query_2")
 

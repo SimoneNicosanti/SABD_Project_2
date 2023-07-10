@@ -36,6 +36,8 @@ def getKafkaConsumer() -> kafka.KafkaConsumer :
         kafkaServer = __getKafkaServer()
         kafkaConsumer = kafka.KafkaConsumer(
             "Query_1_Hour", "Query_1_Day", "Query_1_Glb",
+            "Query_2_Min", "Query_2_Hour", "Query_2_Day",
+            "Query_3_Min", "Query_3_Hour", "Query_3_Day",
             bootstrap_servers = kafkaServer,
             auto_offset_reset='earliest'
         )

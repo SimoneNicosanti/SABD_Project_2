@@ -5,14 +5,14 @@ from pyflink.datastream.connectors.file_system import FileSink
 from pyflink.datastream.formats.json import JsonRowSerializationSchema
 from pyflink.datastream.formats.csv import CsvRowSerializationSchema, CsvBulkWriters, CsvSchema
 # from pyflink.common.serialization import
-
+from pyflink.common.serialization import SimpleStringSchema
 from pyflink.common import SerializationSchema
 
 from dao import KafkaPropertiesReader
 
 
 
-def getKafkaSink(topicName : str, serializationSchema : SerializationSchema) -> KafkaSink :
+def getKafkaSink(topicName : str) -> KafkaSink :
     
     kafkaServer = KafkaPropertiesReader.getKafkaUrl()
 
@@ -22,7 +22,7 @@ def getKafkaSink(topicName : str, serializationSchema : SerializationSchema) -> 
         .set_record_serializer(
             KafkaRecordSerializationSchema.builder() \
                 .set_topic(topicName)
-                .set_value_serialization_schema(serializationSchema)
+                .set_value_serialization_schema(SimpleStringSchema())
                 .build()
         ) \
         .set_delivery_guarantee(DeliveryGuarantee.AT_LEAST_ONCE) \

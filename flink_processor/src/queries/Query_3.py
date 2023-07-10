@@ -14,6 +14,9 @@ from pyflink.common.typeinfo import Types
 from queries.utils.Query_2_Utils import VariationReduceFunction, MyProcessWindowFunction, SecondTimestampAssigner
 from queries.utils.Query_3_Utils import KeyedPercentileComputation
 
+import json
+
+
 def query() :
 
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
@@ -30,13 +33,14 @@ def query() :
     )
 
     windowList = {
-        "Query_2_Min" : Time.minutes(30),
-        # "Query_2_Hour" : Time.hours(1),
-        # "Query_2_Day" : Time.days(1)
+        "Query_3_Min" : Time.minutes(30),
+        "Query_3_Hour" : Time.hours(1),
+        "Query_3_Day" : Time.days(1)
     }
     
     for key, timeDuration in windowList.items() :
         tumblingWindow = TumblingEventTimeWindows.of(timeDuration)
+        millisecDuration = timeDuration.to_milliseconds()
 
         partialStream.window(
                 tumblingWindow
@@ -54,12 +58,16 @@ def query() :
             ).with_timestamp_assigner(
                 SecondTimestampAssigner()
             )
-        ).key_by(
-            lambda x : (x[0], x[1])
-        ).process(
-            KeyedPercentileComputation()
-        ).print()
-
+        ).key_by( ## Keyed by windowStart
+            lambda x : x[0]
+        ).process( ## (timestamp, market, 25_perc, 50_perc, 75_perc)
+            KeyedPercentileComputation(millisecDuration)
+        ).map( ## Convertion for kafka save
+            lambda x : json.dumps(x) ,
+            output_type = Types.STRING()
+        ).sink_to(
+            SinkFactory.getKafkaSink(key)
+        )
     
     env.execute("Query_3")
 

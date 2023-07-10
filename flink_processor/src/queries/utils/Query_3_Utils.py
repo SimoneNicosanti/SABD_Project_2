@@ -1,10 +1,5 @@
 from pyflink.common.typeinfo import Types
-from collections.abc import Iterable
-from pyflink.datastream.formats.json import JsonRowSerializationSchema
-from pyflink.datastream.window import TimeWindow
-from pyflink.datastream.functions import ProcessWindowFunction, MapFunction, ReduceFunction, KeyedProcessFunction, RuntimeContext
-from pyflink.common.watermark_strategy import TimestampAssigner
-from pyflink.datastream.functions import AggregateFunction
+from pyflink.datastream.functions import KeyedProcessFunction, RuntimeContext
 from pyflink.datastream.state import ValueStateDescriptor
 
 from psquare.psquare import PSquare
@@ -12,34 +7,52 @@ from psquare.psquare import PSquare
 
 class KeyedPercentileComputation(KeyedProcessFunction) :
 
-    def __init__(self) -> None:
+    def __init__(self, millisecDuration : int) -> None:
         self.state = None
+        self.milliseconds = millisecDuration
+
 
     def open(self, runtime_context: RuntimeContext):
         self.state = runtime_context.get_state(ValueStateDescriptor(
             "my_state", Types.PICKLED_BYTE_ARRAY()))
     
+
     def process_element(self, value, ctx: 'KeyedProcessFunction.Context'):
 
         currState = self.state.value()
-        if (currState == None) :
-            #PSquare().p_estimate
-            currState = [value[0], value[1], PSquare(0.25), PSquare(0.5), PSquare(0.75), 0]
+        if (currState == None) : ## list of timestamp dict for values
+            currState = [value[0], dict()]
 
-        currState[2].update(value[2]) ## Update 25_per
-        currState[3].update(value[2]) ## Update 50_per
-        currState[4].update(value[2]) ## Update 75_per
-        currState[5] += 1
+        market = value[1]
+        percDict : dict = currState[1]
+
+        marketPerc = percDict.get(market)
+        if (marketPerc == None) :
+            marketPerc = [PSquare(25), PSquare(50), PSquare(75)]
+        
+        marketPerc[0].update(value[2])
+        marketPerc[1].update(value[2])
+        marketPerc[2].update(value[2])
+
+        percDict[market] = marketPerc
 
         self.state.update(currState)
         
-        ctx.timer_service().register_event_time_timer(value[0] + 30 * 60 * 1000)
+        ctx.timer_service().register_event_time_timer(currState[0] + self.milliseconds)
 
     
     def on_timer(self, timestamp: int, ctx: 'KeyedProcessFunction.OnTimerContext'):
 
         result = self.state.value()
+        
+        if (timestamp == result[0] + self.milliseconds) :
+            resultList = [result[0]]
+            resultDict : dict = result[1]
+            for market in sorted(resultDict.keys()) :
+                marketPerc = resultDict[market]
+                resultList.append(market)
+                resultList.append(marketPerc[0].p_estimate())
+                resultList.append(marketPerc[1].p_estimate())
+                resultList.append(marketPerc[2].p_estimate())
 
-        ## TODO Change to consider other windows size
-        if (timestamp >= result[0] + 30 * 60 * 1000) :
-            yield (result[0], result[1], result[2].p_estimate(), result[3].p_estimate(), result[4].p_estimate(), result[5])
+            yield tuple(resultList)

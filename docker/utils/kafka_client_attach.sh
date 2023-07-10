@@ -1,0 +1,1 @@
+docker exec -t -i docker-kafka-client-1 /bin/bash

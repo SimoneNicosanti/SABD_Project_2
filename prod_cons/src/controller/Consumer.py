@@ -10,5 +10,7 @@ def consume() :
     for msg in kafkaConsumer :
         msgTopic : str = msg.topic
         msgValue : str = msg.value
+
+        print("Received for topic >> ", msgTopic)
         CsvWriter.writeCsv(msgTopic, msgValue)
         

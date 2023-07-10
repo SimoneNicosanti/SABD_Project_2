@@ -7,11 +7,13 @@ from pyflink.datastream.window import TumblingEventTimeWindows
 
 from engineering import SinkFactory
 
+import json
+
 from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 
 from pyflink.common.typeinfo import Types
 
-from queries.utils.Query_1_Utils import MyProcessWindowFunction, getQuerySchema_JSON
+from queries.utils.Query_1_Utils import MyProcessWindowFunction
 
 
 def query() :
@@ -49,10 +51,10 @@ def query() :
         ).map( ## (windowStart, ID, avgLast, count)
             lambda x : (x[0], x[1], x[2] / x[3], x[3])
         ).map( ## Convertion for kafka save
-            lambda x : Row(x[0], x[1], x[2], x[3]) ,
-            output_type = Types.ROW([Types.FLOAT(), Types.STRING(), Types.FLOAT(), Types.INT()])
+            lambda x : json.dumps(x) ,
+            output_type = Types.STRING()
         ).sink_to(
-            SinkFactory.getKafkaSink(key, getQuerySchema_JSON())
+            SinkFactory.getKafkaSink(key)
         )
     
 

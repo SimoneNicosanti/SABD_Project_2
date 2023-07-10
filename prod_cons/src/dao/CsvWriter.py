@@ -1,10 +1,9 @@
 import json
 import os
-import shutil
 import csv
 
 def writeCsv(topic : str, value : str) :
-    dictValue = json.loads(value)
+    valueList = json.loads(value)
 
     if (topic.startswith("Query_1")) :
         header = ["Timestamp", "ID", "Avg", "Count"]
@@ -13,15 +12,20 @@ def writeCsv(topic : str, value : str) :
         for i in range(1, 11) :
             header.append("ID_" + str(i))
             header.append("Var_" + str(i))
-    else :
-        pass
+    elif (topic.startswith("Query_3")) :
+        header = ["Timestamp"]
+        for i in range(1, 3) :
+            header.append("Market_" + str(i))
+            header.append("25_perc_" + str(i))
+            header.append("50_perc_" + str(i))
+            header.append("75_perc_" + str(i))
 
-    writeQueryResult(topic, dictValue, header)
+    writeQueryResult(topic, valueList, header)
 
     return
 
 
-def writeQueryResult(topic : str, value : dict, header : list) :
+def writeQueryResult(topic : str, values : list, header : list) :
     filePath = os.path.join("/Results", topic + ".csv")
     if (not os.path.exists(filePath)) :
         with open(filePath, "+x") as file :
@@ -30,6 +34,6 @@ def writeQueryResult(topic : str, value : dict, header : list) :
     
     with open(filePath, "+a") as file :
         csvWriter = csv.writer(file)
-        csvWriter.writerow(value.values())
+        csvWriter.writerow(values)
     
     return
