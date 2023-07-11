@@ -12,13 +12,16 @@ from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 from pyflink.common.typeinfo import Types
 
 from queries.utils.Query_2_Utils import MyProcessWindowFunction, SecondTimestampAssigner, FinalMapFunction, RankingFunction, VariationReduceFunction
-
+from queries.utils.MetricsTaker import MetricsTaker
 import json
 
 
-def query() :
+def query(evaluate = False) :
     
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
+
+    if (evaluate) :
+        env.get_config().set_latency_tracking_interval(1000)
 
     partialStream = dataStream.assign_timestamps_and_watermarks(
         WatermarkStrategy.for_monotonous_timestamps(
@@ -32,14 +35,11 @@ def query() :
     )
 
 
-
     windowList = {
-        "Query_2_Min" : Time.minutes(30),
+        # "Query_2_Min" : Time.minutes(30),
         "Query_2_Hour" : Time.hours(1),
-        "Query_2_Day" : Time.days(1)
+        # "Query_2_Day" : Time.days(1)
     }
-    
-    # TODO: Vedere se si può fare senza altra finestra
     
     for key, timeDuration in windowList.items() :
         tumblingWindow = TumblingEventTimeWindows.of(timeDuration)
@@ -53,25 +53,20 @@ def query() :
             lambda x : (x[2] != x[4]) or (x[2] == x[4] and x[3] != x[5])
         ).map( ## (windowStart, ID, variation)
             lambda x : (x[0], x[1], x[5] - x[3])
-        ).assign_timestamps_and_watermarks(
-            WatermarkStrategy.for_monotonous_timestamps(
-            ).with_timestamp_assigner(
-                SecondTimestampAssigner()
-            )
         ).key_by(
             lambda x : x[0]
         ).window(
             tumblingWindow
-        ).aggregate( ## (startWindow, sortedListOf((variation, ID)))
+        ).aggregate( ## (windowStart, sortedListOf((variation, ID)))
             RankingFunction()
-        ).map( ## (startWindowTimestamp, ID_i, Variation_i)
+        ).map( ## (windowStart, ID_i, Variation_i)
             FinalMapFunction()
         ).map( ## Convertion for kafka save
             lambda x : json.dumps(x) ,
             output_type = Types.STRING()
-        ).sink_to(
-            SinkFactory.getKafkaSink(key)
-        )
+        ).map(
+            func = MetricsTaker()
+        ).print()
     
     env.execute("Query_2")
 

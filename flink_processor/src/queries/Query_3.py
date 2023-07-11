@@ -13,13 +13,17 @@ from pyflink.common.typeinfo import Types
 
 from queries.utils.Query_2_Utils import VariationReduceFunction, MyProcessWindowFunction, SecondTimestampAssigner
 from queries.utils.Query_3_Utils import KeyedPercentileComputation
+from queries.utils.MetricsTaker import MetricsTaker
 
 import json
 
 
-def query() :
+def query(evaluate = False) :
 
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
+
+    if (evaluate) :
+        env.get_config().set_latency_tracking_interval(1000)
 
     partialStream = dataStream.assign_timestamps_and_watermarks(
         WatermarkStrategy.for_monotonous_timestamps(
@@ -34,8 +38,8 @@ def query() :
 
     windowList = {
         "Query_3_Min" : Time.minutes(30),
-        "Query_3_Hour" : Time.hours(1),
-        "Query_3_Day" : Time.days(1)
+        # "Query_3_Hour" : Time.hours(1),
+        # "Query_3_Day" : Time.days(1)
     }
     
     for key, timeDuration in windowList.items() :
@@ -53,11 +57,6 @@ def query() :
             lambda x : (x[0], x[1], x[5] - x[3])
         ).map( ## (windowStart, market, variation)
             lambda x: (x[0], str(x[1])[str(x[1]).index(".") + 1 : ], x[2])
-        ).assign_timestamps_and_watermarks(
-            WatermarkStrategy.for_monotonous_timestamps(
-            ).with_timestamp_assigner(
-                SecondTimestampAssigner()
-            )
         ).key_by( ## Keyed by windowStart
             lambda x : x[0]
         ).process( ## (timestamp, market, 25_perc, 50_perc, 75_perc)
@@ -65,9 +64,13 @@ def query() :
         ).map( ## Convertion for kafka save
             lambda x : json.dumps(x) ,
             output_type = Types.STRING()
-        ).sink_to(
-            SinkFactory.getKafkaSink(key)
-        )
+        ).map(
+            func = MetricsTaker()
+        ).print()
+        
+        # .sink_to(
+        #     SinkFactory.getKafkaSink(key)
+        # )
     
     env.execute("Query_3")
 

@@ -14,11 +14,15 @@ from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 from pyflink.common.typeinfo import Types
 
 from queries.utils.Query_1_Utils import MyProcessWindowFunction
+from queries.utils.MetricsTaker import MetricsTaker
 
 
-def query() :
+def query(evaluate = False) :
     
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
+
+    if (evaluate) :
+        env.get_config().set_latency_tracking_interval(1000)
     
     partialStream = dataStream.filter(
             lambda x : str(x[0]).startswith("G") and str(x[0]).endswith(".FR") and str(x[1]) == "E"
@@ -53,6 +57,8 @@ def query() :
         ).map( ## Convertion for kafka save
             lambda x : json.dumps(x) ,
             output_type = Types.STRING()
+        ).map(
+            func = MetricsTaker()
         ).sink_to(
             SinkFactory.getKafkaSink(key)
         )

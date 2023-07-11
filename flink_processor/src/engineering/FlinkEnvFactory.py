@@ -17,5 +17,8 @@ def getEnv() :
     env.add_python_file("file:///src/queries/utils/MyTimestampAssigner.py")
     env.add_python_file("file:///src/queries/utils/Query_1_Utils.py")
     env.add_python_file("file:///src/queries/utils/Query_2_Utils.py")
+    env.add_python_file("file:///src/queries/utils/Query_3_Utils.py")
+    env.add_python_file("file:///src/queries/utils/MetricsTaker.py")
+
 
     return env
