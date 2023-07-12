@@ -24,6 +24,7 @@ def query(evaluate = False) :
     if (evaluate) :
         env.get_config().set_latency_tracking_interval(1000)
     
+    
     partialStream = dataStream.filter(
             lambda x : str(x[0]).startswith("G") and str(x[0]).endswith(".FR") and str(x[1]) == "E"
         ).assign_timestamps_and_watermarks(
@@ -41,8 +42,8 @@ def query(evaluate = False) :
 
     windowedStreams = {
         "Query_1_Hour" : TumblingEventTimeWindows.of(Time.hours(1)), 
-        "Query_1_Day" : TumblingEventTimeWindows.of(Time.days(1)), 
-        "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7))
+        # "Query_1_Day" : TumblingEventTimeWindows.of(Time.days(1)), 
+        # "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7))
         }
     
 
@@ -58,10 +59,13 @@ def query(evaluate = False) :
             lambda x : json.dumps(x) ,
             output_type = Types.STRING()
         ).map(
-            func = MetricsTaker()
-        ).sink_to(
-            SinkFactory.getKafkaSink(key)
-        )
+            func = MetricsTaker(),
+            output_type = Types.STRING()
+        ).print()
+        
+        # .sink_to(
+        #     SinkFactory.getKafkaSink(key)
+        # )
     
 
     env.execute("Query_1")

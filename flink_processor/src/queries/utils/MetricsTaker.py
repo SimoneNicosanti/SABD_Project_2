@@ -1,5 +1,5 @@
 from pyflink.datastream.functions import MapFunction, RuntimeContext
-
+from pyflink.common.configuration import Configuration
 
 class MetricsTaker(MapFunction):
     def __init__(self):
@@ -18,12 +18,12 @@ class MetricsTaker(MapFunction):
         self.throughput = runtime_context \
             .get_metrics_group() \
             .meter(
-                "throughput", 
+                "my_meter", 
                 time_span_in_seconds = 1
             )
 
-    def map(self, value : tuple):
+    def map(self, value):
 
         ## Update for throughput
-        #self.throughput.mark_event()
+        self.throughput.mark_event()
         return value

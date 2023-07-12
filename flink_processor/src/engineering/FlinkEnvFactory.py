@@ -13,6 +13,7 @@ def getEnv() :
     env.set_stream_time_characteristic(TimeCharacteristic.EventTime)
 
     env.add_jars("file:///KafkaConnectorDependencies.jar")
+    # env.add_jars("file:///opt/flink/lib/flink-metrics-prometheus-1.17.1.jar")
     
     env.add_python_file("file:///src/queries/utils/MyTimestampAssigner.py")
     env.add_python_file("file:///src/queries/utils/Query_1_Utils.py")

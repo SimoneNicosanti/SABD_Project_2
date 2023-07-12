@@ -38,9 +38,13 @@ services:
     volumes:
       - ../flink_processor/src:/src
       - ../Results:/Results
+      - ./flink/flink-conf.yaml:/conf/flink-conf.yaml
     environment:
       - |
-        FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        metrics.reporters: prom
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
     tty: true
 
 
@@ -54,10 +58,14 @@ services:
     volumes:
       - ../Results:/Results
       - ../flink_processor/src:/src
+      - ./flink/flink-conf.yaml:/conf/flink-conf.yaml
     environment:
       - |
-        FLINK_PROPERTIES=jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 20
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 10
+        metrics.reporters: prom
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
     working_dir : /src
     networks:
       - flink_network  
@@ -99,6 +107,17 @@ services:
     depends_on:
       - spark-master
   
+  ## Prometheus
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9010:9010
+    networks:
+      - flink_network
+    tty: true
+    volumes:
+      - ./prometheus/prometheus.yml:/prometheus/prometheus.yml
+      - ./prometheus/data:/data
 
   ## Redis
   # redis :
