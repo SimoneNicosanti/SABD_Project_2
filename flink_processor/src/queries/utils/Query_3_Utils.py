@@ -63,52 +63,28 @@ class KeyedPercentileComputation(KeyedProcessFunction) :
 class TDigestComputation(AggregateFunction) :
 
     def create_accumulator(self):
-        return (0, dict()) ## (Timestamp, dictOfMarketDigest)
+        return (0, "", TDigest()) ## (Timestamp, Market, TDigest)
     
 
     def add(self, value, accumulator):
-        ## Value is like (timestamp, ID, variation)
+        ## Value is like (timestamp, market, variation)
 
-        market = value[1]
-        digestDict : dict = accumulator[1]
-        if (digestDict.get(market) == None) :
-            digestDict[market] = TDigest()
+        tDigest : TDigest = accumulator[2]
+        variationValue = value[2]
+        tDigest.update(variationValue)
+
+        return (value[0], value[1], tDigest)
+
+
+    def merge(self, acc_a, acc_b) :
         
-        marketDigest : TDigest = digestDict[market]
-        marketDigest.update(value[2])
+        digest_a : TDigest = acc_a[2]
+        digest_b : TDigest = acc_b[2]
 
-        return (value[0], digestDict)
-
-
-    def merge(self, acc_a, acc_b):
-
-        digestDict_a : dict = acc_a[1]
-        digestDict_b : dict = acc_b[1]
-
-        resultDict = dict()
-        for key_a in digestDict_a :
-            if key_a in digestDict_b :
-                resultDict[key_a] = digestDict_a[key_a] + digestDict_b[key_a]
-            else :
-                resultDict[key_a] = digestDict_a[key_a]
-        
-        for key_b in digestDict_b :
-            if key_b not in digestDict_a :
-                resultDict[key_b] = digestDict_b[key_b]
-
-
-        return (acc_a[0], resultDict)
+        return (acc_a[0], acc_a[1], digest_a + digest_b)
     
 
     def get_result(self, accumulator):
-
-        resultList = [accumulator[0]]
-        resultDict : dict = accumulator[1]
-        for market in sorted(resultDict.keys()) :
-            marketDigest : TDigest = resultDict[market]
-            resultList.append(market)
-            resultList.append(marketDigest.percentile(25))
-            resultList.append(marketDigest.percentile(50))
-            resultList.append(marketDigest.percentile(75))
         
-        return tuple(resultList)
+        resultDigest : TDigest = accumulator[2]
+        return (accumulator[0], accumulator[1], resultDigest.percentile(25), resultDigest.percentile(50), resultDigest.percentile(75))

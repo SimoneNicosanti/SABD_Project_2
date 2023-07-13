@@ -38,8 +38,8 @@ def query(evaluate = False) :
 
     windowList = {
         "Query_3_Min" : Time.minutes(30),
-        # "Query_3_Hour" : Time.hours(1),
-        # "Query_3_Day" : Time.days(1)
+        "Query_3_Hour" : Time.hours(1),
+        "Query_3_Day" : Time.days(1)
     }
     
     for key, timeDuration in windowList.items() :
@@ -79,8 +79,10 @@ def query(evaluate = False) :
             lambda x : (x[0], x[1], x[5] - x[3])
         ).map( ## (windowStart, market, variation)
             lambda x: (x[0], str(x[1])[str(x[1]).index(".") + 1 : ], x[2])
-        ).window_all(
-             tumblingWindow
+        ).key_by(
+            lambda x : x[1]
+        ).window(
+            tumblingWindow
         ).aggregate(
             TDigestComputation()
         ).map( ## Convertion for kafka save
@@ -90,6 +92,7 @@ def query(evaluate = False) :
             func = MetricsTaker()
         ).print()
         
+        ## TODO Error in sink
         # .sink_to(
         #     SinkFactory.getKafkaSink(key)
         # )

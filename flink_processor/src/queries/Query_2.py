@@ -36,8 +36,8 @@ def query(evaluate = False) :
 
     windowList = {
         "Query_2_Min" : Time.minutes(30),
-        # "Query_2_Hour" : Time.hours(1),
-        # "Query_2_Day" : Time.days(1)
+        "Query_2_Hour" : Time.hours(1),
+        "Query_2_Day" : Time.days(1)
     }
     
     for key, timeDuration in windowList.items() :
