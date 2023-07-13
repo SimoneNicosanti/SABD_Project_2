@@ -10,7 +10,7 @@ from pyflink.datastream.functions import AggregateFunction
 class VariationReduceFunction(ReduceFunction) :
 
     def reduce(self, x, y):
-        timestamp = x[0]
+        id = x[0]
         minTime = min(x[1], y[1])
         maxTime = max(x[3], y[3])
 
@@ -24,7 +24,7 @@ class VariationReduceFunction(ReduceFunction) :
         else :
             maxLast = x[4] if x[3] > y[3] else y[4]
 
-        return (timestamp, minTime, minLast, maxTime, maxLast)
+        return (id, minTime, minLast, maxTime, maxLast)
 
 
 class MyProcessWindowFunction(ProcessWindowFunction) :

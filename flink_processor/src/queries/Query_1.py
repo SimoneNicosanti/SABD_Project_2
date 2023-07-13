@@ -42,13 +42,13 @@ def query(evaluate = False) :
 
     windowedStreams = {
         "Query_1_Hour" : TumblingEventTimeWindows.of(Time.hours(1)), 
-        # "Query_1_Day" : TumblingEventTimeWindows.of(Time.days(1)), 
-        # "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7))
+        "Query_1_Day" : TumblingEventTimeWindows.of(Time.days(1)), 
+        "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7))
         }
     
 
     for key, tumblingWindow in windowedStreams.items() :
-        partialStream.window(
+        preOutputDatastream = partialStream.window(
             tumblingWindow
         ).reduce( 
             lambda x, y : (x[0], x[1] + y[1], x[2] + y[2]), ## (ID, total, count)
@@ -61,11 +61,11 @@ def query(evaluate = False) :
         ).map(
             func = MetricsTaker(),
             output_type = Types.STRING()
-        ).print()
-        
-        # .sink_to(
-        #     SinkFactory.getKafkaSink(key)
-        # )
+        ).name(
+            key + "_Metrics"
+        ).sink_to(
+            SinkFactory.getKafkaSink(key)
+        )
     
 
     env.execute("Query_1")

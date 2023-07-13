@@ -20,6 +20,7 @@ def produce() :
 
     i = 0
     idsSet = set()
+
     for event in eventList :
 
         eventInfo = [event[2], event[3], event[0], event[1], event[21], event[23], event[26]]
@@ -39,10 +40,11 @@ def produce() :
             time.sleep(sleepPeriod)
 
         prevTime = rowTime
-             
+        
+        dictEncoding = json.dumps(dictData).encode()
         kafkaProducer.send(
             topic = kafkaTopic,
-            value = json.dumps(dictData).encode()
+            value = dictEncoding
         )
 
         i += 1
@@ -59,6 +61,7 @@ def produce() :
             topic = kafkaTopic,
             value = json.dumps(endTuple).encode()
         )
+        print(json.dumps(dictData).encode())
 
     kafkaProducer.close()
     

@@ -66,6 +66,8 @@ def query(evaluate = False) :
             output_type = Types.STRING()
         ).map(
             func = MetricsTaker()
+        ).name(
+            key
         ).print()
     
     env.execute("Query_2")

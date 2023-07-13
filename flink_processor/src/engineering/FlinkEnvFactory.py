@@ -1,8 +1,6 @@
 from pyflink.common.typeinfo import Types
-from pyflink.datastream import StreamExecutionEnvironment, RuntimeExecutionMode, DataStream, TimeCharacteristic
-from pyflink.datastream.connectors.kafka import KafkaSource, KafkaOffsetsInitializer
-from pyflink.common.watermark_strategy import WatermarkStrategy
-from pyflink.datastream.formats.json import JsonRowDeserializationSchema
+from pyflink.datastream import StreamExecutionEnvironment, RuntimeExecutionMode, TimeCharacteristic
+
 
 
 def getEnv() :

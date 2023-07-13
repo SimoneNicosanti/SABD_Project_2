@@ -38,7 +38,6 @@ services:
     volumes:
       - ../flink_processor/src:/src
       - ../Results:/Results
-      - ./flink/flink-conf.yaml:/conf/flink-conf.yaml
     environment:
       - |
         FLINK_PROPERTIES=
@@ -58,7 +57,6 @@ services:
     volumes:
       - ../Results:/Results
       - ../flink_processor/src:/src
-      - ./flink/flink-conf.yaml:/conf/flink-conf.yaml
     environment:
       - |
         FLINK_PROPERTIES=
@@ -82,36 +80,37 @@ services:
     tty : true
 
   
-  ## Spark
-  spark-master:
-    image: bitnami/spark
-    environment:
-      - SPARK_MODE=master
-    networks:
-      - flink_network
-    hostname: spark-master
-    ports:
-      - '8080:8080' # http://localhost:8080 web ui spark
-      - '7077:7077'
-    tty: true
+  # ## Spark
+  # spark-master:
+  #   image: bitnami/spark
+  #   environment:
+  #     - SPARK_MODE=master
+  #   networks:
+  #     - flink_network
+  #   hostname: spark-master
+  #   ports:
+  #     - '8080:8080' # http://localhost:8080 web ui spark
+  #     - '7077:7077'
+  #   tty: true
 
-  spark-worker:
-    image: bitnami/spark
-    networks:
-      - flink_network
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-    tty: true
-    depends_on:
-      - spark-master
+  # spark-worker:
+  #   image: bitnami/spark
+  #   networks:
+  #     - flink_network
+  #   environment:
+  #     - SPARK_MODE=worker
+  #     - SPARK_WORKER_MEMORY=1G
+  #     - SPARK_WORKER_CORES=1
+  #   tty: true
+  #   depends_on:
+  #     - spark-master
   
   ## Prometheus
   prometheus:
     image: prom/prometheus
     ports:
       - 9010:9010
+      - 9090:9090
     networks:
       - flink_network
     tty: true
@@ -128,13 +127,17 @@ services:
   #     - "6379:6379"
   #   tty : true
 
-  # ## Grafana
-  # grafana :
-  #   image: grafana/grafana
-  #   networks:
-  #     - my_network
-  #   ports:
-  #     - "3000:3000"
-  #   tty : true
+  ## Grafana
+  grafana :
+    image: grafana/grafana
+    networks:
+      - flink_network
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    tty : true
 
 
