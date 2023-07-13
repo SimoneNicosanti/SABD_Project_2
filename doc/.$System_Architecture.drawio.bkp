@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-07-12T20:11:20.316Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.1 Chrome/112.0.5615.204 Electron/24.6.1 Safari/537.36" etag="eprQbvsTnWtuGCa7Vx5c" version="21.6.1" type="device">
+<mxfile host="Electron" modified="2023-07-13T13:34:46.902Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.1 Chrome/112.0.5615.204 Electron/24.6.1 Safari/537.36" etag="2EG4tu-XEydLWTYewGl4" version="21.6.1" type="device">
   <diagram name="Pagina-1" id="xzlasXtwS9tDgBcQnAEd">
     <mxGraphModel dx="1434" dy="843" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -64,25 +64,25 @@
         <mxCell id="F0SvgqK3PkyoFHp2l92A-49" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2021/11/Docker-Logo-2013.png;clipPath=inset(0% 17.33% 31.07% 15.33%);aspect=fixed;" parent="F0SvgqK3PkyoFHp2l92A-67" vertex="1">
           <mxGeometry x="75" width="69.36" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="jq3iloUvg6TluwMbq8WB-6" target="jq3iloUvg6TluwMbq8WB-7">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="jq3iloUvg6TluwMbq8WB-6" target="jq3iloUvg6TluwMbq8WB-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-7" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://www.freepnglogos.com/uploads/logo-website-png/logo-website-world-wide-web-svg-png-icon-download-10.png;" vertex="1" parent="1">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-7" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://www.freepnglogos.com/uploads/logo-website-png/logo-website-world-wide-web-svg-png-icon-download-10.png;" parent="1" vertex="1">
           <mxGeometry x="578.52" y="640" width="111" height="110" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="F0SvgqK3PkyoFHp2l92A-33" target="F0SvgqK3PkyoFHp2l92A-35">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="F0SvgqK3PkyoFHp2l92A-33" target="F0SvgqK3PkyoFHp2l92A-35" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="F0SvgqK3PkyoFHp2l92A-34" target="F0SvgqK3PkyoFHp2l92A-33">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="F0SvgqK3PkyoFHp2l92A-34" target="F0SvgqK3PkyoFHp2l92A-33" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="jq3iloUvg6TluwMbq8WB-1" target="jq3iloUvg6TluwMbq8WB-7">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="jq3iloUvg6TluwMbq8WB-1" target="jq3iloUvg6TluwMbq8WB-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-14" value="" style="group" vertex="1" connectable="0" parent="1">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-14" value="" style="group" parent="1" vertex="1" connectable="0">
           <mxGeometry x="205" y="610" width="193.04000000000002" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-12" value="" style="group" vertex="1" connectable="0" parent="jq3iloUvg6TluwMbq8WB-14">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-12" value="" style="group" parent="jq3iloUvg6TluwMbq8WB-14" vertex="1" connectable="0">
           <mxGeometry width="154.36" height="85" as="geometry" />
         </mxCell>
         <mxCell id="F0SvgqK3PkyoFHp2l92A-34" value="Producer" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Times New Roman;fontSize=18;" parent="jq3iloUvg6TluwMbq8WB-12" vertex="1">
@@ -91,10 +91,10 @@
         <mxCell id="F0SvgqK3PkyoFHp2l92A-45" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2021/11/Docker-Logo-2013.png;clipPath=inset(0% 17.33% 31.07% 15.33%);aspect=fixed;" parent="jq3iloUvg6TluwMbq8WB-12" vertex="1">
           <mxGeometry x="85" width="69.36" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-1" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://curl.se/logo/curl-transparent.png;" vertex="1" parent="jq3iloUvg6TluwMbq8WB-14">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-1" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://curl.se/logo/curl-transparent.png;" parent="jq3iloUvg6TluwMbq8WB-14" vertex="1">
           <mxGeometry x="85" y="70" width="108.04" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-15" value="" style="group" vertex="1" connectable="0" parent="1">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-15" value="" style="group" parent="1" vertex="1" connectable="0">
           <mxGeometry x="510" y="336.88" width="178.03999999999996" height="153.12" as="geometry" />
         </mxCell>
         <mxCell id="F0SvgqK3PkyoFHp2l92A-64" value="" style="group" parent="jq3iloUvg6TluwMbq8WB-15" vertex="1" connectable="0">
@@ -106,8 +106,23 @@
         <mxCell id="F0SvgqK3PkyoFHp2l92A-63" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2021/11/Docker-Logo-2013.png;clipPath=inset(0% 17.33% 31.07% 15.33%);aspect=fixed;" parent="F0SvgqK3PkyoFHp2l92A-64" vertex="1">
           <mxGeometry x="80" width="69.36" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="jq3iloUvg6TluwMbq8WB-6" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://curl.se/logo/curl-transparent.png;" vertex="1" parent="jq3iloUvg6TluwMbq8WB-15">
+        <mxCell id="jq3iloUvg6TluwMbq8WB-6" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://curl.se/logo/curl-transparent.png;" parent="jq3iloUvg6TluwMbq8WB-15" vertex="1">
           <mxGeometry x="70" y="123.12" width="108.04" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="REIs4Q37yxE99ICMSTkO-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="REIs4Q37yxE99ICMSTkO-1" target="F0SvgqK3PkyoFHp2l92A-38" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nuWsxtLAnOdjGiexu5wx-42" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="1050" y="330" width="159.3599999999999" height="149.357074829932" as="geometry" />
+        </mxCell>
+        <mxCell id="REIs4Q37yxE99ICMSTkO-1" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Grafana_logo.svg/1200px-Grafana_logo.svg.png;clipPath=inset(0% 10.88% 21.33% 10.88%);aspect=fixed;" parent="nuWsxtLAnOdjGiexu5wx-42" vertex="1">
+          <mxGeometry y="5.670000000000016" width="140.02808021221284" height="143.68707482993196" as="geometry" />
+        </mxCell>
+        <mxCell id="nuWsxtLAnOdjGiexu5wx-41" value="" style="shape=image;html=1;verticalLabelPosition=bottom;verticalAlign=top;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2021/11/Docker-Logo-2013.png;clipPath=inset(0% 17.33% 31.07% 15.33%);aspect=fixed;" vertex="1" parent="nuWsxtLAnOdjGiexu5wx-42">
+          <mxGeometry x="90" width="69.36" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nuWsxtLAnOdjGiexu5wx-44" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.rect;fillColor2=none;strokeWidth=3;size=20;indent=5;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="130" y="40" width="1160" height="730" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

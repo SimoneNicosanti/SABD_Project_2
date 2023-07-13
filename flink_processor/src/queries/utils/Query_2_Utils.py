@@ -72,7 +72,7 @@ class RankingFunction(AggregateFunction):
 
     def add(self, value, accumulator):
         ## Value is like (timestamp, ID, variation)
-        timestamp = value[0]
+        timestamp = max(value[0], accumulator[0])
 
         rankList : list = accumulator[1]
         rankList.append((value[2], value[1]))
@@ -88,7 +88,7 @@ class RankingFunction(AggregateFunction):
         
         resultList = self.update_rank_list(mergedList)
 
-        return (acc_a[0], resultList)
+        return (max(acc_a[0], acc_b[0]), resultList)
     
 
     def get_result(self, accumulator):
