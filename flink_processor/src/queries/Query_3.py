@@ -12,7 +12,7 @@ from queries.utils.MyTimestampAssigner import MyTimestampAssigner
 from pyflink.common.typeinfo import Types
 
 from queries.utils.Query_2_Utils import VariationReduceFunction, MyProcessWindowFunction, SecondTimestampAssigner
-from queries.utils.Query_3_Utils import KeyedPercentileComputation
+from queries.utils.Query_3_Utils import KeyedPercentileComputation, TDigestComputation
 from queries.utils.MetricsTaker import MetricsTaker
 
 import json
@@ -46,8 +46,30 @@ def query(evaluate = False) :
         tumblingWindow = TumblingEventTimeWindows.of(timeDuration)
         millisecDuration = timeDuration.to_milliseconds()
 
+        # partialStream.window(
+        #     tumblingWindow
+        # ).reduce( 
+        #     VariationReduceFunction(),
+        #     MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
+        # ).filter(
+        #     lambda x : (x[2] != x[4]) or (x[2] == x[4] and x[3] != x[5])
+        # ).map( ## (windowStart, ID, variation)
+        #     lambda x : (x[0], x[1], x[5] - x[3])
+        # ).map( ## (windowStart, market, variation)
+        #     lambda x: (x[0], str(x[1])[str(x[1]).index(".") + 1 : ], x[2])
+        # ).key_by( ## Keyed by windowStart
+        #     lambda x : x[0]
+        # ).process( ## (timestamp, market, 25_perc, 50_perc, 75_perc)
+        #     KeyedPercentileComputation(millisecDuration)
+        # ).map( ## Convertion for kafka save
+        #     lambda x : json.dumps(x) ,
+        #     output_type = Types.STRING()
+        # ).map(
+        #     func = MetricsTaker()
+        # ).print()
+
         partialStream.window(
-                tumblingWindow
+            tumblingWindow
         ).reduce( 
             VariationReduceFunction(),
             MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
@@ -57,10 +79,10 @@ def query(evaluate = False) :
             lambda x : (x[0], x[1], x[5] - x[3])
         ).map( ## (windowStart, market, variation)
             lambda x: (x[0], str(x[1])[str(x[1]).index(".") + 1 : ], x[2])
-        ).key_by( ## Keyed by windowStart
-            lambda x : x[0]
-        ).process( ## (timestamp, market, 25_perc, 50_perc, 75_perc)
-            KeyedPercentileComputation(millisecDuration)
+        ).window_all(
+             tumblingWindow
+        ).aggregate(
+            TDigestComputation()
         ).map( ## Convertion for kafka save
             lambda x : json.dumps(x) ,
             output_type = Types.STRING()

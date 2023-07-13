@@ -150,12 +150,12 @@
     "list": []
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Panel Title",
+  "title": "Metrics",
   "uid": "feea5407-4582-4ae8-a039-c4b06bba4c73",
   "version": 4,
   "weekStart": ""

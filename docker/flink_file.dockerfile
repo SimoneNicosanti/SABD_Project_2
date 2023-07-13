@@ -15,3 +15,4 @@ RUN curl -o /KafkaConnectorDependencies.jar https://repo.maven.apache.org/maven2
 
 RUN pip3 install jproperties
 RUN pip3 install psquare
+RUN pip3 install tdigest
