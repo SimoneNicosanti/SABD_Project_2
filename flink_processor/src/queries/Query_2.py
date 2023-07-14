@@ -88,7 +88,8 @@ def query(evaluate = False) :
             lambda x : json.dumps(x) ,
             output_type = Types.STRING()
         ).map(
-            func = MetricsTaker()
+            func = MetricsTaker() ,
+            output_type = Types.STRING()
         ).name(
             key
         ).sink_to(

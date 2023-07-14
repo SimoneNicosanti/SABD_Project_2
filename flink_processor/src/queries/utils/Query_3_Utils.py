@@ -87,4 +87,4 @@ class TDigestComputation(AggregateFunction) :
     def get_result(self, accumulator):
         
         resultDigest : TDigest = accumulator[2]
-        return (accumulator[0], accumulator[1], resultDigest.percentile(25), resultDigest.percentile(50), resultDigest.percentile(75))
+        return tuple([accumulator[0], accumulator[1], resultDigest.percentile(25), resultDigest.percentile(50), resultDigest.percentile(75)])

@@ -137,7 +137,11 @@ services:
     volumes:
       - ./grafana/dashboards:/var/lib/grafana/dashboards
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasourcesù
+    environment:
+      - auth.anonymous.enabled=true
+      - auth.anonymous.org_name=Main Org.
+      - auth.anonymous.org_role = Admin
     tty : true
 
 

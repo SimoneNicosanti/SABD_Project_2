@@ -31,6 +31,7 @@ def writeQueryResult(topic : str, values : list, header : list) :
         with open(filePath, "+x") as file :
             csvWriter = csv.writer(file)
             csvWriter.writerow(header)
+        os.chmod(filePath, 0o777)
     
     with open(filePath, "+a") as file :
         csvWriter = csv.writer(file)

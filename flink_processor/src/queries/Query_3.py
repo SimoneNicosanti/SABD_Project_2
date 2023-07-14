@@ -85,17 +85,18 @@ def query(evaluate = False) :
             tumblingWindow
         ).aggregate(
             TDigestComputation()
-        ).map( ## Convertion for kafka save
-            lambda x : json.dumps(x) ,
+        ).map( ## Conversion for kafka save
+            lambda x : str(json.dumps(x)) ,
             output_type = Types.STRING()
         ).map(
-            func = MetricsTaker()
-        ).print()
+            func = MetricsTaker(),
+            output_type = Types.STRING()
+        ).sink_to(
+            SinkFactory.getKafkaSink(key)
+        )
         
         ## TODO Error in sink
-        # .sink_to(
-        #     SinkFactory.getKafkaSink(key)
-        # )
+
     
     env.execute("Query_3")
 
