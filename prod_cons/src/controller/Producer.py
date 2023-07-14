@@ -48,8 +48,8 @@ def produce() :
         )
 
         i += 1
-        if (i == 500000) :
-            break
+        # if (i == 500000) :
+        #     break
 
         print(json.dumps(dictData).encode())
 
@@ -61,7 +61,7 @@ def produce() :
             topic = kafkaTopic,
             value = json.dumps(endTuple).encode()
         )
-        print(json.dumps(dictData).encode())
+        #print(json.dumps(dictData).encode())
 
     kafkaProducer.close()
     
