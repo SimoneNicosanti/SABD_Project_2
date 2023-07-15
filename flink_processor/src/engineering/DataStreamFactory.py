@@ -42,7 +42,7 @@ def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
     env = FlinkEnvFactory.getEnv()
     kafkaSource = __getKafkaSource()
 
-    dataStream = env.from_source(kafkaSource, WatermarkStrategy.no_watermarks(), "Kafka Source")
+    dataStream = env.from_source(kafkaSource, WatermarkStrategy.no_watermarks(), "Kafka Source").set_parallelism(1)
 
     # convertedDataStream = dataStream.map( ## (ID, SecType, Last, Timestamp)
     #         jsonToTuple,

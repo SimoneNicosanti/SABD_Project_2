@@ -24,7 +24,6 @@ def query(evaluate = False) :
     if (evaluate) :
         env.get_config().set_latency_tracking_interval(1000)
     
-    
     partialStream = dataStream.filter(
             lambda x : str(x[0]).startswith("G") and str(x[0]).endswith(".FR") and str(x[1]) == "E"
         ).assign_timestamps_and_watermarks(

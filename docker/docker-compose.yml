@@ -116,7 +116,7 @@ services:
     tty: true
     volumes:
       - ./prometheus/prometheus.yml:/prometheus/prometheus.yml
-      - ./prometheus/data:/data
+      - ./prometheus/data:/prometheus/data
 
   ## Redis
   # redis :
