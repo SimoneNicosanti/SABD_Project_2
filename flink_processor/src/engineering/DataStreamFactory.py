@@ -53,8 +53,6 @@ def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
             output_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.FLOAT(), Types.FLOAT()])
         )
     
-    #convertedDataStream.print()
-
     return (convertedDataStream, env)
 
 

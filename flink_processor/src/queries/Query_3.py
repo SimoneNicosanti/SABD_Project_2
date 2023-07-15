@@ -94,8 +94,6 @@ def query(evaluate = False) :
         ).sink_to(
             SinkFactory.getKafkaSink(key)
         )
-        
-        ## TODO Error in sink
 
     
     env.execute("Query_3")

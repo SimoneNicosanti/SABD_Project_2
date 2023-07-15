@@ -10,8 +10,8 @@ services:
     build: 
       dockerfile: producer_file.dockerfile
     tty : true
-    depends_on:
-      - kafka
+    # depends_on:
+    #   - kafka
     networks:
       - flink_network
     volumes:
@@ -70,14 +70,14 @@ services:
     tty: true 
 
 
-  kafka:
-    image: 'bitnami/kafka:latest'
-    networks:
-      - flink_network
-    environment:
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true ## To automatically create topic when added events
-    tty : true
+  # kafka:
+  #   image: 'bitnami/kafka:latest'
+  #   networks:
+  #     - flink_network
+  #   environment:
+  #     - ALLOW_PLAINTEXT_LISTENER=yes
+  #     - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true ## To automatically create topic when added events
+  #   tty : true
 
   
   # ## Spark
@@ -140,7 +140,6 @@ services:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasourcesù
     environment:
       - auth.anonymous.enabled=true
-      - auth.anonymous.org_name=Main Org.
       - auth.anonymous.org_role = Admin
     tty : true
 

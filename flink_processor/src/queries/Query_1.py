@@ -39,17 +39,16 @@ def query(evaluate = False) :
             key_selector = lambda x : x[0]
         )
     
-
     windowedStreams = {
         "Query_1_Hour" : TumblingEventTimeWindows.of(Time.hours(1)), 
         "Query_1_Day" : TumblingEventTimeWindows.of(Time.days(1)), 
-        "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7))
+        "Query_1_Glb" : TumblingEventTimeWindows.of(Time.days(7), Time.days(4)) ## The delay is to start from 8-11-2021
         }
     
 
-    for key, tumblingWindow in windowedStreams.items() :
-        preOutputDatastream = partialStream.window(
-            tumblingWindow
+    for key, window in windowedStreams.items() :
+        partialStream.window(
+            window
         ).reduce( 
             lambda x, y : (x[0], x[1] + y[1], x[2] + y[2]), ## (ID, total, count)
             MyProcessWindowFunction() ## (windowStart, ID, total, count)

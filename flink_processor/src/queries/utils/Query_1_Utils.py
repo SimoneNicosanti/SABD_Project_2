@@ -21,6 +21,8 @@ class MyProcessWindowFunction(ProcessWindowFunction) :
             
             counter = next(iter(counters))
             window : TimeWindow = context.window()
+            print(window.start, window.end)
+            
             yield (window.start, counter[0], counter[1], counter[2])
 
 
