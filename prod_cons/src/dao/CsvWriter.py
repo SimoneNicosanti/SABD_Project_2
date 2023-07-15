@@ -13,7 +13,7 @@ def writeCsv(topic : str, value : str) :
             header.append("ID_" + str(i))
             header.append("Var_" + str(i))
     elif (topic.startswith("Query_3")) :
-        header = ["Timestamp", "Market_", "25_perc_", "50_perc_", "75_perc_"]
+        header = ["Timestamp", "Market", "25_Perc", "50_Perc", "75_Perc"]
 
     writeQueryResult(topic, valueList, header)
 

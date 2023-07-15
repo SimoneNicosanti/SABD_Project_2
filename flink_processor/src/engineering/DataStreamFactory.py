@@ -14,28 +14,29 @@ from dao import KafkaPropertiesReader
 
 def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
 
-    def jsonToTuple(mess : str) :
-        jsonObject = json.loads(mess)
+    # def jsonToTuple(mess : str) :
+    #     jsonObject = json.loads(mess)
 
-        return (
-                jsonObject["ID"] , 
-                jsonObject["SecType"] , 
-                float(jsonObject["Last"]) ,
-                jsonObject["TradingDate"] ,
-                jsonObject["TradingTime"]
-                )
+    #     return (
+    #             jsonObject["ID"] , 
+    #             jsonObject["SecType"] , 
+    #             float(jsonObject["Last"]) ,
+    #             jsonObject["TradingDate"] ,
+    #             jsonObject["TradingTime"]
+    #             )
+
+    def jsonToTuple(mess : str) :
+        tupleList = json.loads(mess)
+
+        for jsonObject in tupleList :
+            yield ( jsonObject["ID"], jsonObject["SecType"], float(jsonObject["Last"]), jsonObject["TradingDate"], jsonObject["TradingTime"] )
     
 
     def prepareTupleForProcessing(inputTuple : tuple) -> tuple :
 
         tupleDateTime = datetime.datetime.strptime(inputTuple[3] + " " + inputTuple[4], "%d-%m-%Y %H:%M:%S.%f")
 
-        return (
-                inputTuple[0],
-                inputTuple[1],
-                inputTuple[2],
-                datetime.datetime.timestamp(tupleDateTime) * 1000
-                )
+        return ( inputTuple[0], inputTuple[1], inputTuple[2], datetime.datetime.timestamp(tupleDateTime) * 1000 )
     
 
     env = FlinkEnvFactory.getEnv()
@@ -43,7 +44,17 @@ def getDataStream() -> tuple[DataStream, StreamExecutionEnvironment] :
 
     dataStream = env.from_source(kafkaSource, WatermarkStrategy.no_watermarks(), "Kafka Source")
 
-    convertedDataStream = dataStream.map( ## (ID, SecType, Last, Timestamp)
+    # convertedDataStream = dataStream.map( ## (ID, SecType, Last, Timestamp)
+    #         jsonToTuple,
+    #         output_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.FLOAT(), Types.SQL_DATE(), Types.SQL_TIME()])
+    #     ).filter(
+    #         lambda x : x[3] != "" and x[4] != "00:00:00.000"
+    #     ).map(
+    #         prepareTupleForProcessing,
+    #         output_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.FLOAT(), Types.FLOAT()])
+    #     )
+
+    convertedDataStream = dataStream.flat_map( ## (ID, SecType, Last, Timestamp)
             jsonToTuple,
             output_type = Types.TUPLE([Types.STRING(), Types.STRING(), Types.FLOAT(), Types.SQL_DATE(), Types.SQL_TIME()])
         ).filter(

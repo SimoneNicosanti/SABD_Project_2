@@ -43,32 +43,6 @@ def query(evaluate = False) :
     for key, timeDuration in windowList.items() :
         tumblingWindow = TumblingEventTimeWindows.of(timeDuration)
 
-        # partialStream.window(
-        #         tumblingWindow
-        # ).reduce( 
-        #     VariationReduceFunction(), ## (ID, minTime, minLast, maxTime, maxLast)
-        #     MyProcessWindowFunction() ## (windowStart, ID, minTime, minLast, maxTime, maxLast)
-        # ).filter(
-        #     lambda x : (x[2] != x[4]) or (x[2] == x[4] and x[3] != x[5])
-        # ).map( ## (windowStart, ID, variation)
-        #     lambda x : (x[0], x[1], x[5] - x[3])
-        # ).key_by(
-        #     lambda x : x[0]
-        # ).window(
-        #     tumblingWindow
-        # ).aggregate( ## (windowStart, sortedListOf((variation, ID)))
-        #     RankingFunction()
-        # ).map( ## (windowStart, ID_i, Variation_i)
-        #     FinalMapFunction()
-        # ).map( ## Convertion for kafka save
-        #     lambda x : json.dumps(x) ,
-        #     output_type = Types.STRING()
-        # ).map(
-        #     func = MetricsTaker()
-        # ).name(
-        #     key
-        # ).print()
-
         partialStream.window(
                 tumblingWindow
         ).reduce( 
@@ -91,7 +65,7 @@ def query(evaluate = False) :
             func = MetricsTaker() ,
             output_type = Types.STRING()
         ).name(
-            key
+            key + "_Metrics"
         ).sink_to(
             SinkFactory.getKafkaSink(key)
         )

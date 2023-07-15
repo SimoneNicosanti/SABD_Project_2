@@ -1,7 +1,9 @@
 import csv
 import datetime
+import os
 
 def readDatasetFromCSV(fileName : str) -> list :
+
     with open('../dataset/Dataset.csv') as datasetFile:
         reader = csv.reader(datasetFile)
 

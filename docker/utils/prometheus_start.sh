@@ -1,1 +1,0 @@
-docker exec -t -i docker-prometheus-1 prometheus --config.file=./prometheus.yml --web.listen-address=:9010
