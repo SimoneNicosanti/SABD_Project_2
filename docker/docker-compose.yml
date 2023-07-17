@@ -44,6 +44,7 @@ services:
         jobmanager.rpc.address: jobmanager
         metrics.reporters: prom
         metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+#        metrics.latency.interval: 1000
     tty: true
 
 
@@ -64,46 +65,21 @@ services:
         taskmanager.numberOfTaskSlots: 10
         metrics.reporters: prom
         metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.latency.interval: 1000
     working_dir : /src
     networks:
       - flink_network  
     tty: true 
 
 
-  # kafka:
-  #   image: 'bitnami/kafka:latest'
-  #   networks:
-  #     - flink_network
-  #   environment:
-  #     - ALLOW_PLAINTEXT_LISTENER=yes
-  #     - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true ## To automatically create topic when added events
-  #   tty : true
-
-  
-  # ## Spark
-  # spark-master:
-  #   image: bitnami/spark
-  #   environment:
-  #     - SPARK_MODE=master
-  #   networks:
-  #     - flink_network
-  #   hostname: spark-master
-  #   ports:
-  #     - '8080:8080' # http://localhost:8080 web ui spark
-  #     - '7077:7077'
-  #   tty: true
-
-  # spark-worker:
-  #   image: bitnami/spark
-  #   networks:
-  #     - flink_network
-  #   environment:
-  #     - SPARK_MODE=worker
-  #     - SPARK_WORKER_MEMORY=1G
-  #     - SPARK_WORKER_CORES=1
-  #   tty: true
-  #   depends_on:
-  #     - spark-master
+  kafka:
+    image: 'bitnami/kafka:latest'
+    networks:
+      - flink_network
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true ## To automatically create topic when added events
+    tty : true
   
   ## Prometheus
   prometheus:
@@ -117,15 +93,6 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/prometheus/prometheus.yml
       - ./prometheus/data:/prometheus/data
-
-  ## Redis
-  # redis :
-  #   image: redis
-  #   networks:
-  #     - flink_network
-  #   ports:
-  #     - "6379:6379"
-  #   tty : true
 
   ## Grafana
   grafana :
@@ -143,4 +110,11 @@ services:
       - auth.anonymous.org_role = Admin
     tty : true
 
-
+  ## Redis
+  # redis :
+  #   image: redis
+  #   networks:
+  #     - flink_network
+  #   ports:
+  #     - "6379:6379"
+  #   tty : true

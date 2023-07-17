@@ -23,7 +23,7 @@ def query(evaluate = False) :
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
 
     if (evaluate) :
-        env.get_config().set_latency_tracking_interval(1000)
+        env.get_config().set_latency_tracking_interval(10)
 
     partialStream = dataStream.assign_timestamps_and_watermarks(
         WatermarkStrategy.for_monotonous_timestamps(
@@ -75,8 +75,11 @@ def query(evaluate = False) :
             SinkFactory.getKafkaSink(key)
         )
 
-    
-    env.execute("Query_3")
+        if (evaluate) :
+            env.execute_async(key)
+
+    if (not evaluate) :
+        env.execute("Query_3")
 
     return 
 

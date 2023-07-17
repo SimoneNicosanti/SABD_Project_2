@@ -1,1 +1,0 @@
-docker exec -t -i docker-jobmanager-1 /bin/bash

@@ -1,11 +1,10 @@
 from typing import Any
 from pyflink.datastream.functions import MapFunction, RuntimeContext
-from datetime import datetime
+import datetime
 from typing import Callable
 
 class MetricsTaker(MapFunction):
     def __init__(self):
-        self.latency = 0.0
         self.throughput = 0.0
         self.counter = 0
         self.startTime = 0
@@ -13,15 +12,9 @@ class MetricsTaker(MapFunction):
 
     def open(self, runtime_context: RuntimeContext):
         ## Time of creation for this operator
-        self.startTime = datetime.now().timestamp() ## Timestamp di creazione in secondi
+        self.startTime = datetime.datetime.now().timestamp() ## Timestamp di creazione in secondi
         self.counter = 0
-
-        runtime_context \
-            .get_metrics_group() \
-            .gauge(
-                "latency", 
-                lambda: self.latency * 100000
-            )
+        self.throughput = 0.0
         
         runtime_context \
             .get_metrics_group() \
@@ -34,13 +27,10 @@ class MetricsTaker(MapFunction):
     def map(self, value):
 
         self.counter += 1
-        nowTimestamp = datetime.now().timestamp()
-        diffTime = nowTimestamp - self.startTime
-
-        ## Average latency for tuple [s / tuple]
-        self.latency = diffTime / self.counter 
+        nowTimestamp = datetime.datetime.now().timestamp()
+        totalDiffTime = nowTimestamp - self.startTime
 
         ## Average throughput [tuple / s]
-        self.throughput = self.counter / diffTime
+        self.throughput = self.counter / totalDiffTime
 
         return value

@@ -16,13 +16,15 @@ from pyflink.common.typeinfo import Types
 from queries.utils.Query_1_Utils import MyProcessWindowFunction
 from queries.utils.MetricsTaker import MetricsTaker
 
+import datetime
+
 
 def query(evaluate = False) :
     
     (dataStream, env) = DataStreamFactory.getDataStream() ## (ID, SecType, Last, Timestamp)
 
     if (evaluate) :
-        env.get_config().set_latency_tracking_interval(1000)
+        env.get_config().set_latency_tracking_interval(10)
     
     partialStream = dataStream.filter(
             lambda x : str(x[0]).startswith("G") and str(x[0]).endswith(".FR") and str(x[1]) == "E"
@@ -64,8 +66,11 @@ def query(evaluate = False) :
         ).sink_to(
             SinkFactory.getKafkaSink(key)
         )
-    
 
-    env.execute("Query_1")
+        if (evaluate) :
+            env.execute_async(key)
+    
+    if (not evaluate) :
+        env.execute("Query_1")
 
     return
