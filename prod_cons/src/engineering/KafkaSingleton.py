@@ -14,7 +14,10 @@ def getKafkaProducer() -> kafka.KafkaProducer :
         
         kafkaServer = __getKafkaServer()
 
-        __KAFKA_PRODUCER = kafka.KafkaProducer(bootstrap_servers = kafkaServer)
+        __KAFKA_PRODUCER = kafka.KafkaProducer(
+            bootstrap_servers = kafkaServer,
+            linger_ms = 60000 ## Wait a minute before send unless flush is used
+        )
         
     return __KAFKA_PRODUCER
 

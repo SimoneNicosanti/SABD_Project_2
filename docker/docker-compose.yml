@@ -10,8 +10,6 @@ services:
     build: 
       dockerfile: producer_file.dockerfile
     tty : true
-    # depends_on:
-    #   - kafka
     networks:
       - flink_network
     volumes:
@@ -19,8 +17,8 @@ services:
       - ../dataset:/dataset
       - ../Results:/Results
     working_dir : /src
-    # command: |
-    #         curl -o /Dataset.csv www.ce.uniroma2.it/courses/sabd2223/project/out600_combined+header.csv 
+    command: |
+            curl -o /Dataset.csv www.ce.uniroma2.it/courses/sabd2223/project/out600_combined+header.csv 
 
 
   jobmanager:
@@ -109,12 +107,3 @@ services:
       - auth.anonymous.enabled=true
       - auth.anonymous.org_role = Admin
     tty : true
-
-  ## Redis
-  # redis :
-  #   image: redis
-  #   networks:
-  #     - flink_network
-  #   ports:
-  #     - "6379:6379"
-  #   tty : true

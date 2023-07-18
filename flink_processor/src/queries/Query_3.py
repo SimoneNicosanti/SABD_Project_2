@@ -44,7 +44,6 @@ def query(evaluate = False) :
     
     for key, timeDuration in windowList.items() :
         tumblingWindow = TumblingEventTimeWindows.of(timeDuration)
-        millisecDuration = timeDuration.to_milliseconds()
 
         partialStream.window(
             tumblingWindow
